@@ -28,7 +28,7 @@ enum Comand {
         ///将工作区中已跟踪的文件(tracked)更新到暂存区（修改 & 删除）；不包含新增
         #[clap(short, long)]  //short自动取首字母
         update: bool,    //参数3： -u或--update
-    }
+    },
     //删除文件
     Rm{
         ///要删除的文件
@@ -38,5 +38,51 @@ enum Comand {
         cached: bool,        //参数2： --cached
         #[clap(short, long)]  //flag 递归删除目录
         recursive: bool,     //参数3： -r或--recursive
+    },
+    //提交暂存区的文件
+    Commit {
+        #[clap(short,long)]
+        messages: String,
+        #[clap(long, action)]
+        allow_empty: bool,
+    },
+    ///查看当前状态
+    Stauts,
+    ///log 现实提交历史
+    #[clap(group = ArgGroup::new("sub").required(false))]//让clap知道这个子命令有两个互斥的参数
+    Log {
+        #[clap(short='A), long]
+        all: bool,
+
+        #[clap(short, long)]
+        number : Option<usize>,
+    },
+    ///branch
+    Branch {
+        ///分支名称
+        #[clap(group="sub")]
+        new_branch: Option<String>,
+        ///基于某个commit创建新分支
+        #[clap(requried="new_branch")]
+        commit_hash: Option<String>,
+        
+        ///列出所有分支
+        #[clap(short,long,action,group="sub",default_value_t=true)]//不传此参数时，默认为 true   
+        list: bool,
+
+        ///删除制定分支，不能删除当前所在分支
+        #[clap(short='D', long, group="sub")]
+        delete: Option<String>,
+
+        ///显示当前分支
+        #[clap(long, action, group="sub")]
+        show: bool,
     }
+
+    ///切换分支
+    Switch {
+        ///要切换的分支名称
+        branch_name: String,
+
+
 }
